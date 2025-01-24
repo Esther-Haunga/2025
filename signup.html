@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - Health & Wellness Tracker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        .signup-container {
+            max-width: 400px;
+            margin: 100px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .signup-container h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .signup-container input {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .signup-container button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .signup-container button:hover {
+            background-color: #45a049;
+        }
+
+        .error, .success {
+            font-size: 0.9em;
+            margin-top: 10px;
+        }
+
+        .error {
+            color: red;
+        }
+
+        .success {
+            color: green;
+        }
+    </style>
+</head>
+<body>
+
+<div class="signup-container">
+    <h2>Create an Account</h2>
+    <form id="signupForm">
+        <input type="text" id="name" placeholder="Full Name" required>
+        <input type="email" id="email" placeholder="Email Address" required>
+        <input type="password" id="password" placeholder="Password" required>
+        <input type="password" id="confirmPassword" placeholder="Confirm Password" required>
+        <button type="submit">Sign Up</button>
+        <div id="message" class="error"></div>
+        <div id="success" class="success"></div>
+    </form>
+</div>
+
+<script>
+    document.getElementById("signupForm").addEventListener("submit", async function (event) {
+    event.preventDefault();
+
+    const name = document.getElementById("signupName").value;
+    const email = document.getElementById("signupEmail").value;
+    const password = document.getElementById("signupPassword").value;
+    const confirmPassword = document.getElementById("signupConfirmPassword").value;
+    const signupMessage = document.getElementById("signupMessage");
+
+    // Check if passwords match
+    if (password !== confirmPassword) {
+        signupMessage.textContent = "Passwords do not match. Please try again.";
+        signupMessage.classList.add("error");
+        return;
+    }
+
+    // Simulate backend request
+    try {
+        const response = await fetch('http://localhost:3000/signup', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ name, email, password }),
+        });
+
+        const result = await response.json();
+        if (response.ok) {
+            signupMessage.textContent = result.message;
+            signupMessage.classList.add("success");
+
+            // Redirect to the main page after successful sign-up
+            setTimeout(() => {
+                window.location.href = "/main.html";  // Redirect to main page after 2 seconds
+            }, 2000);
+        } else {
+            signupMessage.textContent = result.error;
+            signupMessage.classList.add("error");
+        }
+    } catch (error) {
+        signupMessage.textContent = "An error occurred. Please try again.";
+        signupMessage.classList.add("error");
+    }
+});
+
+    const users = []; // Simulated database of users
+
+    document.getElementById("signupForm").addEventListener("submit", function (event) {
+        event.preventDefault(); // Prevent page reload on form submission
+
+        const name = document.getElementById("name").value;
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+        const confirmPassword = document.getElementById("confirmPassword").value;
+        const messageDiv = document.getElementById("message");
+        const successDiv = document.getElementById("success");
+
+        // Reset messages
+        messageDiv.textContent = "";
+        successDiv.textContent = "";
+
+        // Validate inputs
+        if (password !== confirmPassword) {
+            messageDiv.textContent = "Passwords do not match. Please try again.";
+            return;
+        }
+
+        if (users.some(user => user.email === email)) {
+            messageDiv.textContent = "This email is already registered. Please log in.";
+            return;
+        }
+
+        // Add new user to the database
+        users.push({ name, email, password });
+
+        successDiv.textContent = "Account created successfully! You can now log in.";
+        document.getElementById("signupForm").reset(); // Clear the form
+    });
+</script>
+
+</body>
+</html>
